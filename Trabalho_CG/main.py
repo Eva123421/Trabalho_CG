@@ -27,8 +27,11 @@ def init():
     glEnable(GL_DEPTH_TEST)
 
     # Carrega shader
-    myShader = Shader(os.path.join("vertex.glsl"), os.path.join("fragment.glsl"))
-    
+    myShader = Shader(
+        os.path.join(os.path.dirname(__file__), "vertex.glsl"),
+        os.path.join(os.path.dirname(__file__), "fragment.glsl")
+    )
+
     # Cria jogador
     jogador = Jogador()
 
@@ -50,7 +53,7 @@ def init():
 
     
     rampa1 = Rampa()
-    rampa1.pos = glm.vec3(-7, altura_rampa_pos, -4)
+    rampa1.pos = glm.vec3(-7, altura_rampa_pos, -3.99)
     rampa1.scale = glm.vec3(4, altura_rampa_tamanho, 8)
     rampa1.rotation_y = 0.0  
     rampa1.color = (0.2, 0.2, 0.2)
@@ -67,13 +70,13 @@ def init():
     paredes.append(parede1)
 
     parede2 = Parede()
-    parede2.pos = glm.vec3(-10, altura_parede_pos, -2)
+    parede2.pos = glm.vec3(-10.01, altura_parede_pos, -2)
     parede2.scale = glm.vec3(6, altura_parede_tamanho, 20)
     
     paredes.append(parede2)
 
     parede3 = Parede()
-    parede3.pos = glm.vec3(0, altura_parede_pos, -2.0)
+    parede3.pos = glm.vec3(0.01, altura_parede_pos, -2.0)
     parede3.scale = glm.vec3(6, altura_parede_tamanho, 20)
     
     paredes.append(parede3)
