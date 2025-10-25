@@ -8,6 +8,7 @@ import glm
 class Jogador:
     def __init__(self):
         # Propriedades do jogador
+        self.tipo = "jogador"
         self.pos = glm.vec3(7.0, 0.5, 7.0)
         self.rotate = 0.0
         self.scale = glm.vec3(1.0, 1.0, 1.0)
@@ -166,6 +167,41 @@ class Jogador:
             self.on_ground = False
 
         
+
+    def atualizar_tamanho(self):
+        self.size = glm.vec3(abs(self.scale.x), abs(self.scale.y), abs(self.scale.z))
+
+    def ao_colidir(self, outro):
+        if outro.tipo in ("chao", "parede", "rampa"):
+            delta = self.pos - outro.pos
+
+            # Distâncias de sobreposição
+            overlap_x = (self.size.x + outro.size.x) / 2 - abs(delta.x)
+            overlap_y = (self.size.y + outro.size.y) / 2 - abs(delta.y)
+            overlap_z = (self.size.z + outro.size.z) / 2 - abs(delta.z)
+
+            if overlap_x > 0 and overlap_y > 0 and overlap_z > 0:
+                # --- Está sobre um objeto (plataforma) ---
+                if delta.y > 0:
+                    altura_alvo = outro.pos.y + outro.size.y / 2 + self.size.y / 2
+
+                    # 🔹 Movimento suave para ajustar a altura (interpola)
+                    diferenca = altura_alvo - self.pos.y
+                    self.pos.y += diferenca * 0.2  # suaviza 20% da diferença por frame
+
+                    # Considera como "no chão" se a diferença for pequena
+                    if abs(diferenca) < 0.05:
+                        self.pos.y = altura_alvo
+                        self.vel_y = 0
+                        self.on_ground = True
+                    return
+
+                # --- Bloqueio lateral (parede) ---
+                if overlap_x < overlap_z:
+                    self.pos.x += overlap_x if delta.x > 0 else -overlap_x
+                else:
+                    self.pos.z += overlap_z if delta.z > 0 else -overlap_z
+
 
 
 
