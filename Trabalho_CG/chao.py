@@ -8,6 +8,10 @@ class Chao:
         #parâmetros do chão
         self.pos = glm.vec3(0.0, 0.0, 0.0)
         self.scale = glm.vec3(1.0, 1.0, 1.0)
+        self.size = glm.vec3(abs(self.scale.x), 
+                             abs(self.scale.y), 
+                             abs(self.scale.z))
+
         self.color = glm.vec3(0.1, 0.8, 0.1)
         # vértices do chão
         self.vertices = [
