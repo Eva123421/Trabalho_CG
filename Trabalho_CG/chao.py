@@ -6,6 +6,7 @@ from shader import Shader
 class Chao:
     def __init__(self):
         #parâmetros do chão
+        self.tipo = "chao"
         self.pos = glm.vec3(0.0, 0.0, 0.0)
         self.scale = glm.vec3(1.0, 1.0, 1.0)
         self.size = glm.vec3(abs(self.scale.x), 
@@ -42,6 +43,13 @@ class Chao:
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * 4, ctypes.c_void_p(0))
         glEnableVertexAttribArray(0)
         glBindVertexArray(0)
+
+
+    def atualizar_tamanho(self):
+        self.size = glm.vec3(abs(self.scale.x), abs(self.scale.y), abs(self.scale.z))
+
+    def ao_colidir(self, outro):
+        pass
 
 
     # renderiza o chão
