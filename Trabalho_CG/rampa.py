@@ -9,6 +9,10 @@ class Rampa:
         # Propriedades da rampa
         self.pos=glm.vec3(0,0,0)
         self.scale=glm.vec3(4,2,4)
+        self.size = glm.vec3(abs(self.scale.x), 
+                             abs(self.scale.y), 
+                             abs(self.scale.z))
+
         self.direction = direction
         self.rotation_y = 0.0  # em graus
         self.color = glm.vec3(0.8, 0.3, 0.1)
