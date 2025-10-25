@@ -7,6 +7,7 @@ import glm
 class Parede:
     def __init__(self):
         # Propriedades da parede
+        self.tipo = "parede"  
         self.pos=glm.vec3(0, 0, 0)
         self.scale=glm.vec3(2, 2, 2)
         self.size = glm.vec3(abs(self.scale.x), 
@@ -58,7 +59,14 @@ class Parede:
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
-   
+
+
+    def atualizar_tamanho(self):
+        self.size = glm.vec3(abs(self.scale.x), abs(self.scale.y), abs(self.scale.z))
+
+    def ao_colidir(self, outro):
+         pass
+
     #render da parede
     def render(self, shader):
         model = glm.mat4(1.0)
