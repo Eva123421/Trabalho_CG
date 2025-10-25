@@ -35,9 +35,9 @@ def init():
     )
 
     # Cria jogador
-    # Cria o gerenciador global de colisões
-    
+    # Cria o gerenciador global de colisõesa
     jogador = Jogador()
+    jogador.atualizar_tamanho()
 
 
 
@@ -46,12 +46,13 @@ def init():
     #------------------
     altura_parede_tamanho = 6.0
     altura_parede_pos = altura_parede_tamanho / 2.00
-    altura_rampa_pos = 0.2
-    altura_rampa_tamanho = 6 + altura_rampa_pos
+    altura_rampa_pos = 0.001
+    altura_rampa_tamanho = 6 
     # Cria chão 
     chao = Chao()
     chao.pos = glm.vec3(0, 0, 0)
     chao.scale = glm.vec3(10, 1, 10)
+    chao.atualizar_tamanho()
     
     # Cria rampas
 
@@ -61,6 +62,7 @@ def init():
     rampa1.scale = glm.vec3(4, altura_rampa_tamanho, 8)
     rampa1.rotation_y = 0.0  
     rampa1.color = (0.2, 0.2, 0.2)
+    rampa1.atualizar_tamanho()
     rampas.append(rampa1)
 
     #Criar Paredes
@@ -70,28 +72,31 @@ def init():
     parede1 = Parede()
     parede1.pos = glm.vec3(-5, altura_parede_pos, -8)
     parede1.scale = glm.vec3(6, altura_parede_tamanho, 8)
-    
+    parede1.atualizar_tamanho()
     paredes.append(parede1)
 
     parede2 = Parede()
     parede2.pos = glm.vec3(-10.01, altura_parede_pos, -2)
     parede2.scale = glm.vec3(6, altura_parede_tamanho, 20)
-    
+    parede2.atualizar_tamanho()
     paredes.append(parede2)
 
     parede3 = Parede()
     parede3.pos = glm.vec3(0.01, altura_parede_pos, -2.0)
     parede3.scale = glm.vec3(6, altura_parede_tamanho, 20)
-    
+    parede3.atualizar_tamanho()
     paredes.append(parede3)
 
     # Passa as paredes pro jogador
     jogador.paredes = paredes
+    
 
     # Registra todos que devem colidir
     colisoes.registrar(jogador)
     colisoes.registrar(chao)
     colisoes.registrar(rampa1)
+    for parede in paredes:
+        colisoes.registrar(parede)
 
     
 
