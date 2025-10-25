@@ -7,6 +7,7 @@ import glm
 class Rampa:
     def __init__(self, direction='z+'):
         # Propriedades da rampa
+        self.tipo = "rampa"
         self.pos=glm.vec3(0,0,0)
         self.scale=glm.vec3(4,2,4)
         self.size = glm.vec3(abs(self.scale.x), 
@@ -90,6 +91,12 @@ class Rampa:
         height_local = progress * 1.0  # altura vai até 1 no espaço local
         height_world = self.pos.y + (height_local * self.scale.y)
         return height_world
+    
+    def atualizar_tamanho(self):
+        self.size = glm.vec3(abs(self.scale.x), abs(self.scale.y), abs(self.scale.z))
+
+    def ao_colidir(self, outro):
+        pass
 
     # Renderiza a rampa
     def render(self, shader):
