@@ -7,6 +7,7 @@ from jogador import Jogador
 from chao import Chao
 from rampa import Rampa
 from parede import Parede
+from colisoes import Colisoes
 
 
 
@@ -15,6 +16,7 @@ width, height = 800, 600
 jogador = None
 chao = None
 myShader = None
+colisoes = Colisoes()
 rampas = []
 paredes = []
 window = None
@@ -33,6 +35,8 @@ def init():
     )
 
     # Cria jogador
+    # Cria o gerenciador global de colisões
+    
     jogador = Jogador()
 
 
@@ -84,6 +88,11 @@ def init():
     # Passa as paredes pro jogador
     jogador.paredes = paredes
 
+    # Registra todos que devem colidir
+    colisoes.registrar(jogador)
+    colisoes.registrar(chao)
+    colisoes.registrar(rampa1)
+
     
 
 # Processa entrada do teclado
@@ -123,6 +132,7 @@ def render():
     # Renderiza paredes
     for p in paredes:
         p.render(myShader)
+    colisoes.verificar_colisoes()
 
 
 
@@ -156,6 +166,7 @@ def main():
         glfw.poll_events()
         process_input(window, delta_time)
         jogador.update(delta_time, rampas)
+        
         render()
         glfw.swap_buffers(window)
 
