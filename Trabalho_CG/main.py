@@ -46,8 +46,7 @@ def init():
     #------------------
     altura_parede_tamanho = 6.0
     altura_parede_pos = altura_parede_tamanho / 2.00
-    altura_rampa_pos = 0.001
-    altura_rampa_tamanho = 6 
+     
     # Cria chão 
     chao = Chao()
     chao.pos = glm.vec3(0, 0, 0)
@@ -58,8 +57,8 @@ def init():
 
     
     rampa1 = Rampa()
-    rampa1.pos = glm.vec3(-7, altura_rampa_pos, -3.99)
-    rampa1.scale = glm.vec3(4, altura_rampa_tamanho, 8)
+    rampa1.pos = glm.vec3(-7, 0.01, -3.99)
+    rampa1.scale = glm.vec3(4, 6, 8)
     rampa1.rotation_y = 0.0  
     rampa1.color = (0.2, 0.2, 0.2)
     rampa1.atualizar_tamanho()
