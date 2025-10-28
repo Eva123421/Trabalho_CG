@@ -53,9 +53,7 @@ def init():
     chao.scale = glm.vec3(10, 1, 10)
     chao.atualizar_tamanho()
     
-    # Cria rampas
-
-    
+    # Cria rampas    
     rampa1 = Rampa()
     rampa1.pos = glm.vec3(-7, 0.01, -3.99)
     rampa1.scale = glm.vec3(4, 6, 8)
@@ -65,9 +63,6 @@ def init():
     rampas.append(rampa1)
 
     #Criar Paredes
-    
-    
-
     parede1 = Parede()
     parede1.pos = glm.vec3(-5, altura_parede_pos, -8)
     parede1.scale = glm.vec3(6, altura_parede_tamanho, 8)
@@ -137,13 +132,7 @@ def render():
     for p in paredes:
         p.render(myShader)
     colisoes.verificar_colisoes()
-
-
-
-
     myShader.unbind()
-
-
 
 # Função principal
 def main():
