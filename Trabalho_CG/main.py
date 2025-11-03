@@ -10,9 +10,6 @@ from parede import Parede
 from colisoes import Colisoes
 from espada import Espada
 
-
-
-
 # Variáveis globais
 width, height = 800, 600
 jogador = None
