@@ -14,7 +14,7 @@ class Espada:
         # Estado da animação
         self.atacando = False
         self.progresso = 0.0
-        self.velocidade_estocada = 1.5  # ← você pode ajustar depois
+        self.velocidade_estocada = 6  # ← você pode ajustar depois
 
         # Vértices (um cubo fino)
         self.vertices = [
