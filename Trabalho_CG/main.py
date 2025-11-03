@@ -113,7 +113,12 @@ def process_input(window, delta_time):
         jogador.move(move_dir, delta_time, rampa_model)
     # Detecta clique do mouse esquerdo
     if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
-        espada.atacar()
+        espada.atacar_estocada()
+
+    if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS:
+        espada.atacar_corte()
+
+
 
 
 # Renderiza a cena

@@ -11,12 +11,18 @@ class Espada:
         self.color = glm.vec3(0.8, 0.8, 0.8)
         self.size = glm.vec3(abs(self.scale.x), abs(self.scale.y), abs(self.scale.z))
 
-        # Estado da animação
-        self.atacando = False
+        # Estados de animação
+        self.atacando_estocada = False
+        self.atacando_corte = False
         self.progresso = 0.0
+<<<<<<< Updated upstream
         self.velocidade_estocada = 6  # ← você pode ajustar depois
+=======
+        self.velocidade_estocada = 1.5
+        self.velocidade_corte = 2.0
+>>>>>>> Stashed changes
 
-        # Vértices (um cubo fino)
+        # Vértices (cubo fino)
         self.vertices = [
             [-0.5, -0.5, -0.5],
             [ 0.5, -0.5, -0.5],
@@ -54,54 +60,83 @@ class Espada:
         glBindVertexArray(0)
 
     # -------------------------------
-    # Animação de estocada
+    # Controle de ataques
     # -------------------------------
-    def atacar(self):
-        """Inicia a animação de estocada."""
-        if not self.atacando:
-            self.atacando = True
+    def atacar_estocada(self):
+        if not self.atacando_estocada and not self.atacando_corte:
+            self.atacando_estocada = True
+            self.progresso = 0.0
+
+    def atacar_corte(self):
+        if not self.atacando_estocada and not self.atacando_corte:
+            self.atacando_corte = True
             self.progresso = 0.0
 
     def update(self, delta_time):
-        """Atualiza o progresso da estocada."""
-        if self.atacando:
+        if self.atacando_estocada:
             self.progresso += self.velocidade_estocada * delta_time
-            if self.progresso >= 2.0:  # ida (1.0) + volta (1.0)
+            if self.progresso >= 2.0:
                 self.progresso = 0.0
-                self.atacando = False
+                self.atacando_estocada = False
 
-    def get_offset(self):
-        """Calcula o deslocamento da espada durante a estocada."""
-        if not self.atacando:
+        elif self.atacando_corte:
+            self.progresso += self.velocidade_corte * delta_time
+            if self.progresso >= 2.0:
+                self.progresso = 0.0
+                self.atacando_corte = False
+
+    # -------------------------------
+    # Movimentos das animações
+    # -------------------------------
+    def get_offset_estocada(self):
+        if not self.atacando_estocada:
             return 0.0
+        return self.progresso if self.progresso < 1.0 else 2.0 - self.progresso
 
-        # Progresso de 0→1→0 (ida e volta)
+    def get_angulo_corte(self):
+        if not self.atacando_corte:
+            return 0.0
+        # vai de -90° a +90° e volta
         if self.progresso < 1.0:
-            return self.progresso  # indo pra frente
+            return -90 + 180 * self.progresso
         else:
-            return 2.0 - self.progresso  # voltando
+            return 90 - 180 * (self.progresso - 1.0)
 
     # -------------------------------
     # Renderização
     # -------------------------------
     def render(self, shader, jogador_pos, jogador_rot):
-        """Renderiza a espada presa à mão do jogador."""
         model = glm.mat4(1.0)
-
-        # Posição base (mão)
+        # --- offset da espada na mão ---
         offset = glm.vec3(0.6, 0.0, 0.3)
-
-        # Adiciona deslocamento da estocada
-        deslocamento = glm.vec3(0.0, 0.0, +self.get_offset() * 0.8)  # 0.8 é o alcance da estocada
+        deslocamento = glm.vec3(0.0, 0.0, +self.get_offset_estocada() * 0.8)
         total_offset = offset + deslocamento
-
-        # Rotaciona offset conforme o jogador
         rotated_offset = glm.rotate(glm.mat4(1.0), jogador_rot, glm.vec3(0, 1, 0)) * glm.vec4(total_offset, 1.0)
 
-        # Matriz final
-        model = glm.translate(model, jogador_pos + glm.vec3(rotated_offset))
-        model = glm.rotate(model, jogador_rot, glm.vec3(0, 1, 0))  
-        model = glm.rotate(model, glm.radians(90), glm.vec3(1, 0, 0))  # Deitar a espada
+        # --- deslocamento lateral fixo no espaço local do jogador ---
+        offset_local = glm.vec3(-0.4, 0.0, 0.9)  # 0.5 à direita
+        offset_rotacionado = glm.rotate(glm.mat4(1.0), jogador_rot, glm.vec3(0, 1, 0)) * glm.vec4(offset_local, 1.0)
+        pos_ajustada = jogador_pos + glm.vec3(offset_rotacionado)
+
+        # --- aplica tudo ---
+        model = glm.translate(model, pos_ajustada + glm.vec3(rotated_offset))
+        model = glm.rotate(model, jogador_rot, glm.vec3(0, 1, 0))
+        model = glm.rotate(model, glm.radians(90), glm.vec3(1, 0, 0))
+
+
+        # ------------------------------------------------------
+        # PIVÔ DE ROTAÇÃO NA BASE (corte horizontal)
+        # ------------------------------------------------------
+        if self.atacando_corte:
+            angulo = self.get_angulo_corte()
+            # Move pivô para base (parte inferior da espada)
+            # Como a escala Y define o comprimento da espada,
+            # movemos -0.5 na direção do eixo Y antes de girar.
+            model = glm.translate(model, glm.vec3(0, -0.5, 0))
+            model = glm.rotate(model, glm.radians(angulo), glm.vec3(0, 0, 1))
+            model = glm.translate(model, glm.vec3(0, +0.5, 0))
+
+        # Escala final
         model = glm.scale(model, self.scale)
 
         shader.setMatrix("modelMatrix", glm.value_ptr(model))
