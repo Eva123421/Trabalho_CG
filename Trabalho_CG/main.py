@@ -37,6 +37,7 @@ def init():
     # Cria jogador
     # Cria o gerenciador global de colisõesa
     jogador = Jogador()
+    jogador.scale = glm.vec3(1.0, 1.0, 1.0) 
     jogador.atualizar_tamanho()
 
 
