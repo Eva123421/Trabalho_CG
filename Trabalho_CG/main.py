@@ -8,17 +8,18 @@ from chao import Chao
 from rampa import Rampa
 from parede import Parede
 from colisoes import Colisoes
+from espada import Espada
+
 
 
 
 # Variáveis globais
 width, height = 800, 600
 jogador = None
+espada = None
 chao = None
 myShader = None
 colisoes = Colisoes()
-rampas = []
-paredes = []
 window = None
 parede_model = None
 rampa_model = None
@@ -30,7 +31,7 @@ rampas_transform = []
 
 
 def init():
-    global myShader, jogador, chao, rampas, rampa_model, rampas_transform, parede_model, paredes_transform
+    global myShader, jogador, espada, chao, rampas, rampa_model, rampas_transform, parede_model, paredes_transform
 
     glClearColor(0.9, 0.9, 0.9, 1)
     glEnable(GL_DEPTH_TEST)
@@ -46,6 +47,10 @@ def init():
     jogador = Jogador()
     jogador.scale = glm.vec3(1.0, 1.0, 1.0) 
     jogador.atualizar_tamanho()
+
+    # Cria espada
+    espada = Espada()
+    
 
 
 
@@ -85,9 +90,8 @@ def init():
     colisoes.definir_instancias("parede", paredes_transform)
     colisoes.definir_instancias("rampa", rampas_transform)
     # Passa as paredes pro jogador
-    jogador.paredes = paredes
     
-
+    
     # Registra todos que devem colidir
     colisoes.registrar(jogador)
     colisoes.registrar(chao)
@@ -109,11 +113,15 @@ def process_input(window, delta_time):
         move_dir = 'right'
 
     if move_dir:
-        jogador.move(move_dir, delta_time, rampas)
+        jogador.move(move_dir, delta_time, rampa_model)
+    # Detecta clique do mouse esquerdo
+    if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
+        espada.atacar()
+
 
 # Renderiza a cena
 def render():
-    global myShader, jogador, chao, rampas
+    global myShader, jogador, chao
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     myShader.bind()
 
@@ -122,6 +130,9 @@ def render():
 
     # Renderiza jogador
     jogador.render(myShader)
+    # Espada (acoplada ao jogador)
+    espada.render(myShader, jogador.pos, jogador.rotation_y)
+
 
     # Renderiza chão
     chao.render(myShader)
@@ -168,6 +179,7 @@ def main():
         glfw.poll_events()
         process_input(window, delta_time)
         jogador.update(delta_time, rampa_model, rampas_transform)
+        espada.update(delta_time)
 
         
         render()
