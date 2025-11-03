@@ -20,10 +20,17 @@ colisoes = Colisoes()
 rampas = []
 paredes = []
 window = None
+parede_model = None
+rampa_model = None
+paredes_transform = []
+rampas_transform = []
+
+
+
 
 
 def init():
-    global myShader, jogador, chao, rampas
+    global myShader, jogador, chao, rampas, rampa_model, rampas_transform, parede_model, paredes_transform
 
     glClearColor(0.9, 0.9, 0.9, 1)
     glEnable(GL_DEPTH_TEST)
@@ -55,33 +62,28 @@ def init():
     chao.atualizar_tamanho()
     
     # Cria rampas    
-    rampa1 = Rampa()
-    rampa1.pos = glm.vec3(-7, 0.01, -3.99)
-    rampa1.scale = glm.vec3(4, 6, 8)
-    rampa1.rotation_y = 0.0  
-    rampa1.color = (0.2, 0.2, 0.2)
-    rampa1.atualizar_tamanho()
-    rampas.append(rampa1)
+
+    rampa_model = Rampa()
+    rampas_transform = [
+        {
+            "pos": glm.vec3(-7, 0.01, -3.99),
+            "scale": glm.vec3(4, 6, 8),
+            "rotation_y": 0.0,
+            "color": (0.2, 0.2, 0.2)
+        }
+    ]
+
 
     #Criar Paredes
-    parede1 = Parede()
-    parede1.pos = glm.vec3(-5, altura_parede_pos, -8)
-    parede1.scale = glm.vec3(6, altura_parede_tamanho, 8)
-    parede1.atualizar_tamanho()
-    paredes.append(parede1)
-
-    parede2 = Parede()
-    parede2.pos = glm.vec3(-10.01, altura_parede_pos, -2)
-    parede2.scale = glm.vec3(6, altura_parede_tamanho, 20)
-    parede2.atualizar_tamanho()
-    paredes.append(parede2)
-
-    parede3 = Parede()
-    parede3.pos = glm.vec3(0.01, altura_parede_pos, -2.0)
-    parede3.scale = glm.vec3(6, altura_parede_tamanho, 20)
-    parede3.atualizar_tamanho()
-    paredes.append(parede3)
-
+    parede_model = Parede()
+    paredes_transform = [
+        {"pos": glm.vec3(-5, altura_parede_pos, -8), "scale": glm.vec3(6, altura_parede_tamanho, 8)},
+        {"pos": glm.vec3(-10.01, altura_parede_pos, -2), "scale": glm.vec3(6, altura_parede_tamanho, 20)},
+        {"pos": glm.vec3(0.01, altura_parede_pos, -2.0), "scale": glm.vec3(6, altura_parede_tamanho, 20)},
+    ]
+    # 🔹 Informa ao sistema de colisões as instâncias existentes
+    colisoes.definir_instancias("parede", paredes_transform)
+    colisoes.definir_instancias("rampa", rampas_transform)
     # Passa as paredes pro jogador
     jogador.paredes = paredes
     
@@ -89,9 +91,8 @@ def init():
     # Registra todos que devem colidir
     colisoes.registrar(jogador)
     colisoes.registrar(chao)
-    colisoes.registrar(rampa1)
-    for parede in paredes:
-        colisoes.registrar(parede)
+    colisoes.registrar(rampa_model)
+    colisoes.registrar(parede_model)
 
     
 
@@ -126,14 +127,21 @@ def render():
     chao.render(myShader)
 
     # Renderiza rampas
-    for r in rampas:
-        r.render(myShader)
-    
+    for r in rampas_transform:
+        rampa_model.render(myShader, r["pos"], 
+                           r["scale"], 
+                           r["rotation_y"], 
+                           r["color"])
     # Renderiza paredes
-    for p in paredes:
-        p.render(myShader)
-    colisoes.verificar_colisoes()
+    for p in paredes_transform:
+        parede_model.render(myShader, 
+                            p["pos"], 
+                            p["scale"])
+    
+    colisoes.verificar_colisoes(jogador)
+
     myShader.unbind()
+
 
 # Função principal
 def main():
@@ -159,7 +167,8 @@ def main():
 
         glfw.poll_events()
         process_input(window, delta_time)
-        jogador.update(delta_time, rampas)
+        jogador.update(delta_time, rampa_model, rampas_transform)
+
         
         render()
         glfw.swap_buffers(window)

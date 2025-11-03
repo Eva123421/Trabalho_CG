@@ -62,36 +62,42 @@ class Rampa:
         glBindVertexArray(0)
 
     # Calcula altura levando em conta rotação e escala
-    def get_height_at(self, x, z):
-        # Inverter as transformações do modelo (trazer o ponto pro espaço local)
-        model = glm.mat4(1.0)
-        model = glm.translate(model, self.pos)
-        model = glm.rotate(model, glm.radians(self.rotation_y), glm.vec3(0, 1, 0))
-        model = glm.scale(model, self.scale)
+    def get_height_at(self, x, z, pos=None, scale=None, rotation_y=0.0):
+        """
+        Calcula a altura do ponto (x, z) no espaço da rampa.
+        Se pos, scale e rotation_y forem fornecidos, usa os da instância.
+        """
 
-        # Matriz inversa (mundo → local)
+        pos = pos or self.pos
+        scale = scale or self.scale
+
+        # Constrói a matriz de transformação completa da instância
+        model = glm.mat4(1.0)
+        model = glm.translate(model, pos)
+        model = glm.rotate(model, glm.radians(rotation_y), glm.vec3(0, 1, 0))
+        model = glm.scale(model, scale)
+
+        # Calcula a inversa para converter coordenadas do mundo -> local
         inv_model = glm.inverse(model)
 
-        # Transforma o ponto do jogador para o espaço local da rampa
         local_point = inv_model * glm.vec4(x, 0.0, z, 1.0)
-
         lx, lz = local_point.x, local_point.z
 
-        # A rampa vai de 0→1 em X e Z no espaço local
+        # Verifica se o ponto está dentro dos limites da rampa local (0..1)
         if not (0.0 <= lx <= 1.0 and 0.0 <= lz <= 1.0):
             return None
 
-        # Altura proporcional dentro da rampa
+        # Calcula progresso na inclinação
         if self.direction == 'z+':
             progress = 1.0 - lz
         else:
             progress = 1.0 - lx
 
-
-        height_local = progress * 1.0  # altura vai até 1 no espaço local
-        height_world = self.pos.y + (height_local * self.scale.y)
+        # Altura local proporcional
+        height_local = progress * 1.0  # de 0 até 1
+        height_world = pos.y + (height_local * scale.y)
         return height_world
-    
+
     def atualizar_tamanho(self):
         self.size = glm.vec3(abs(self.scale.x), abs(self.scale.y), abs(self.scale.z))
 
@@ -99,17 +105,15 @@ class Rampa:
         pass
 
     # Renderiza a rampa
-    def render(self, shader):
-        shader.setUniform("color", *self.color)
+    def render(self, shader, pos, scale, rotation_y=0.0, color=None):
+        shader.setUniform("color", *(color if color else self.color))
         model = glm.mat4(1.0)
-        model = glm.translate(model, self.pos)
-        model = glm.rotate(model, glm.radians(self.rotation_y), glm.vec3(0, 1, 0))
-        model = glm.scale(model, self.scale)
-
+        model = glm.translate(model, pos)
+        model = glm.rotate(model, glm.radians(rotation_y), glm.vec3(0, 1, 0))
+        model = glm.scale(model, scale)
         shader.setMatrix("modelMatrix", glm.value_ptr(model))
-        
-
         glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, 3*len(self.faces), GL_UNSIGNED_INT, None)
+        glDrawElements(GL_TRIANGLES, 3 * len(self.faces), GL_UNSIGNED_INT, None)
+
 
     

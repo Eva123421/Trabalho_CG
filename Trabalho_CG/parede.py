@@ -68,11 +68,11 @@ class Parede:
          pass
 
     #render da parede
-    def render(self, shader):
+    def render(self, shader, pos, scale, color=None):
         model = glm.mat4(1.0)
-        model = glm.translate(model, self.pos)
-        model = glm.scale(model, self.scale)
+        model = glm.translate(model, pos)
+        model = glm.scale(model, scale)
         shader.setMatrix("modelMatrix", glm.value_ptr(model))
-        shader.setUniform("color", *self.color)
+        shader.setUniform("color", *(color if color else self.color))
         glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, 3*len(self.faces), GL_UNSIGNED_INT, None)
+        glDrawElements(GL_TRIANGLES, 3 * len(self.faces), GL_UNSIGNED_INT, None)

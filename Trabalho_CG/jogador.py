@@ -111,7 +111,7 @@ class Jogador:
 
     #move o jogador com base na entrada do teclado
     def move(self, direction, delta_time, rampas=[]):
-        speed = 5.0
+        speed = 2.0
         # mover o jogador na direção X
         right = glm.normalize(glm.vec3(glm.cos(self.camera_angle), 0, glm.sin(self.camera_angle)))
         # mover o jogador na direção Z
@@ -138,7 +138,8 @@ class Jogador:
 
 
     # Atualiza o jogador (gravidade, colisões, etc)
-    def update(self, delta_time, rampas=[]):
+    def update(self, delta_time, rampa_model, rampas_transform):
+
         gravity = -15.0
         self.vel_y += gravity * delta_time  # aplica gravidade
 
@@ -151,11 +152,18 @@ class Jogador:
 
         # Detecta altura da rampa em que o jogador está
         altura_rampa = None
-        for rampa in rampas:
-            h = rampa.get_height_at(self.pos.x, self.pos.z)
+        for r in rampas_transform:
+            h = rampa_model.get_height_at(
+                self.pos.x,
+                self.pos.z,
+                pos=r["pos"],
+                scale=r["scale"],
+                rotation_y=r["rotation_y"]
+            )
             if h is not None:
                 altura_rampa = h
                 break
+
 
         # Define a altura alvo: usa a da rampa se estiver sobre uma, senão usa a do chão
         altura_alvo = altura_rampa + 0.5 if altura_rampa is not None else altura_base_jogador
