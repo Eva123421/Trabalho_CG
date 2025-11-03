@@ -15,12 +15,11 @@ class Espada:
         self.atacando_estocada = False
         self.atacando_corte = False
         self.progresso = 0.0
-<<<<<<< Updated upstream
+
         self.velocidade_estocada = 6  # ← você pode ajustar depois
-=======
+
         self.velocidade_estocada = 1.5
         self.velocidade_corte = 2.0
->>>>>>> Stashed changes
 
         # Vértices (cubo fino)
         self.vertices = [
