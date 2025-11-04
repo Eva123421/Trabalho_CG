@@ -18,8 +18,8 @@ class Espada:
 
         self.velocidade_estocada = 6  # ← você pode ajustar depois
 
-        self.velocidade_estocada = 1.5
-        self.velocidade_corte = 2.0
+        self.velocidade_estocada = 3
+        self.velocidade_corte = 3
 
         # Vértices (cubo fino)
         self.vertices = [
@@ -113,7 +113,7 @@ class Espada:
         rotated_offset = glm.rotate(glm.mat4(1.0), jogador_rot, glm.vec3(0, 1, 0)) * glm.vec4(total_offset, 1.0)
 
         # --- deslocamento lateral fixo no espaço local do jogador ---
-        offset_local = glm.vec3(-0.4, 0.0, 0.9)  # 0.5 à direita
+        offset_local = glm.vec3(-0.4, 0.0, 0.8)  # 0.5 à direita
         offset_rotacionado = glm.rotate(glm.mat4(1.0), jogador_rot, glm.vec3(0, 1, 0)) * glm.vec4(offset_local, 1.0)
         pos_ajustada = jogador_pos + glm.vec3(offset_rotacionado)
 
