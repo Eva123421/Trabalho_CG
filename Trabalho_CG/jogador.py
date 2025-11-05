@@ -26,8 +26,27 @@ class Jogador:
         self.on_ground = True
 
 
+        # # --- Leitura automática do arquivo .obj ---
+        # self.vertices = []
+        # self.faces = []
+        # with open("Player.obj", "r") as file:
+        #     for line in file:
+        #         if line.startswith("v "):
+        #             _, x, y, z = line.strip().split()[:4]
+        #             self.vertices.append([float(x), float(y), float(z)])
+        #         elif line.startswith("f "):
+        #             parts = [p.split("/")[0] for p in line.strip().split()[1:]]
+        #             indices = [int(p) - 1 for p in parts]
+        #             # Triangularização automática (fan triangulation)
+        #             if len(indices) > 3:
+        #                 for i in range(1, len(indices) - 1):
+        #                     self.faces.append([indices[0], indices[i], indices[i + 1]])
+        #             else:
+        #                 self.faces.append(indices)
+        # # -------------------------------------------
+
         # Cubo original para referência
-        # # vértices do cubo(jogador)
+        # vértices do cubo(jogador)
         self.vertices = [
             [-0.5, -0.5, -0.5],
             [ 0.5, -0.5, -0.5],

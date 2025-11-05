@@ -17,9 +17,7 @@ class Espada:
         self.progresso = 0.0
 
         self.velocidade_estocada = 6  # ← você pode ajustar depois
-
-        self.velocidade_estocada = 3
-        self.velocidade_corte = 3
+        self.velocidade_corte = 6
 
         # Vértices (cubo fino)
         self.vertices = [
@@ -80,9 +78,10 @@ class Espada:
 
         elif self.atacando_corte:
             self.progresso += self.velocidade_corte * delta_time
-            if self.progresso >= 2.0:
+            if self.progresso >= 1.0:
                 self.progresso = 0.0
                 self.atacando_corte = False
+
 
     # -------------------------------
     # Movimentos das animações
@@ -95,16 +94,18 @@ class Espada:
     def get_angulo_corte(self):
         if not self.atacando_corte:
             return 0.0
-        # vai de -90° a +90° e volta
-        if self.progresso < 1.0:
-            return -90 + 180 * self.progresso
-        else:
-            return 90 - 180 * (self.progresso - 1.0)
+        # Um único swing: de -90° até +90°, sem voltar
+        return 90 - 160 * min(self.progresso, 1.0)
+
 
     # -------------------------------
     # Renderização
     # -------------------------------
     def render(self, shader, jogador_pos, jogador_rot):
+        # ✅ Só renderiza se estiver atacando
+        if not (self.atacando_estocada or self.atacando_corte):
+            return
+
         model = glm.mat4(1.0)
         # --- offset da espada na mão ---
         offset = glm.vec3(0.6, 0.0, 0.3)
@@ -113,7 +114,7 @@ class Espada:
         rotated_offset = glm.rotate(glm.mat4(1.0), jogador_rot, glm.vec3(0, 1, 0)) * glm.vec4(total_offset, 1.0)
 
         # --- deslocamento lateral fixo no espaço local do jogador ---
-        offset_local = glm.vec3(-0.4, 0.0, 0.8)  # 0.5 à direita
+        offset_local = glm.vec3(-0.4, 0.0, 0.5)
         offset_rotacionado = glm.rotate(glm.mat4(1.0), jogador_rot, glm.vec3(0, 1, 0)) * glm.vec4(offset_local, 1.0)
         pos_ajustada = jogador_pos + glm.vec3(offset_rotacionado)
 
@@ -122,15 +123,11 @@ class Espada:
         model = glm.rotate(model, jogador_rot, glm.vec3(0, 1, 0))
         model = glm.rotate(model, glm.radians(90), glm.vec3(1, 0, 0))
 
-
         # ------------------------------------------------------
         # PIVÔ DE ROTAÇÃO NA BASE (corte horizontal)
         # ------------------------------------------------------
         if self.atacando_corte:
             angulo = self.get_angulo_corte()
-            # Move pivô para base (parte inferior da espada)
-            # Como a escala Y define o comprimento da espada,
-            # movemos -0.5 na direção do eixo Y antes de girar.
             model = glm.translate(model, glm.vec3(0, -0.5, 0))
             model = glm.rotate(model, glm.radians(angulo), glm.vec3(0, 0, 1))
             model = glm.translate(model, glm.vec3(0, +0.5, 0))

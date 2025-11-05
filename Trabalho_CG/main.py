@@ -22,6 +22,9 @@ parede_model = None
 rampa_model = None
 paredes_transform = []
 rampas_transform = []
+botao_esquerdo_pressionado = False
+botao_direito_pressionado = False
+
 
 
 
@@ -42,7 +45,8 @@ def init():
     # Cria jogador
     # Cria o gerenciador global de colisõesa
     jogador = Jogador()
-    jogador.scale = glm.vec3(1.0, 1.0, 1.0) 
+    scale = 1.0
+    jogador.scale = glm.vec3(scale, scale, scale) 
     jogador.atualizar_tamanho()
 
     # Cria espada
@@ -99,6 +103,7 @@ def init():
 
 # Processa entrada do teclado
 def process_input(window, delta_time):
+    global botao_esquerdo_pressionado, botao_direito_pressionado
     move_dir = None
     if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
         move_dir = 'up'
@@ -111,13 +116,22 @@ def process_input(window, delta_time):
 
     if move_dir:
         jogador.move(move_dir, delta_time, rampa_model)
-    # Detecta clique do mouse esquerdo
+    # --- ATAQUES COM CLIQUE ÚNICO ---
+    # Botão esquerdo → estocada
     if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
-        espada.atacar_estocada()
+        if not botao_esquerdo_pressionado:  # só dispara uma vez
+            espada.atacar_estocada()
+            botao_esquerdo_pressionado = True
+    else:
+        botao_esquerdo_pressionado = False
 
+    # Botão direito → corte
     if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS:
-        espada.atacar_corte()
-
+        if not botao_direito_pressionado:  # só dispara uma vez
+            espada.atacar_corte()
+            botao_direito_pressionado = True
+    else:
+        botao_direito_pressionado = False
 
 
 
